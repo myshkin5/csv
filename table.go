@@ -27,7 +27,7 @@ func New(columns []string, values [][]string) (*Table, error) {
 	return &Table{
 		values:      values,
 		columnIndex: columnIndex,
-		current:     1,
+		current:     0,
 	}, nil
 }
 

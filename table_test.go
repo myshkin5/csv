@@ -23,11 +23,13 @@ var _ = Describe("Table", func() {
 		})
 
 		It("reads values in order", func() {
+			Expect(table.Next()).To(Succeed())
 			Expect(table.Value("col1")).To(Equal("val1"))
 			Expect(table.Value("col2")).To(Equal("val2"))
 		})
 
 		It("reads the second record", func() {
+			Expect(table.Next()).To(Succeed())
 			Expect(table.Next()).To(Succeed())
 			Expect(table.Value("col1")).To(Equal("val3"))
 			Expect(table.Value("col2")).To(Equal("val4"))
@@ -35,18 +37,21 @@ var _ = Describe("Table", func() {
 
 		It("returns EOF when there are no more records", func() {
 			Expect(table.Next()).To(Succeed())
+			Expect(table.Next()).To(Succeed())
 			Expect(table.Next()).To(Equal(io.EOF))
 		})
 	})
 
 	Describe("sad path", func() {
-		BeforeEach(func() {
-			_, err = csv.New([]string{"col1", "col2"}, [][]string{{"col1", "col3"}})
-			Expect(err).To(HaveOccurred())
-		})
+		Describe("column doesn't exist", func() {
+			BeforeEach(func() {
+				_, err = csv.New([]string{"col1", "col2"}, [][]string{{"col1", "col3"}})
+				Expect(err).To(HaveOccurred())
+			})
 
-		It("returns an error if a column doesn't exist in the header row", func() {
-			Expect(err.Error()).To(Equal("Column col2 not found in header record"))
+			It("returns an error", func() {
+				Expect(err.Error()).To(Equal("Column col2 not found in header record"))
+			})
 		})
 	})
 })
