@@ -18,21 +18,37 @@ var _ = Describe("Table", func() {
 	Describe("happy path", func() {
 		BeforeEach(func() {
 			table, err = csv.New([]string{"col1", "col2"},
-				[][]string{{"col1", "col2"}, {"val1", "val2"}, {"val3", "val4"}})
+				[][]string{{"col1", "col2", "col3"}, {"val1", "val2", "val3"}, {"val4", "val5", "val6"}})
 			Expect(err).NotTo(HaveOccurred())
 		})
 
 		It("reads values in order", func() {
 			Expect(table.Next()).To(Succeed())
-			Expect(table.Value("col1")).To(Equal("val1"))
-			Expect(table.Value("col2")).To(Equal("val2"))
+			value, ok := table.Value("col1")
+			Expect(ok).To(BeTrue())
+			Expect(value).To(Equal("val1"))
+			value, ok = table.Value("col2")
+			Expect(ok).To(BeTrue())
+			Expect(value).To(Equal("val2"))
+			value, ok = table.Value("col3")
+			Expect(ok).To(BeTrue())
+			Expect(value).To(Equal("val3"))
+			_, ok = table.Value("col4")
+			Expect(ok).To(BeFalse())
 		})
 
 		It("reads the second record", func() {
 			Expect(table.Next()).To(Succeed())
 			Expect(table.Next()).To(Succeed())
-			Expect(table.Value("col1")).To(Equal("val3"))
-			Expect(table.Value("col2")).To(Equal("val4"))
+			value, ok := table.Value("col1")
+			Expect(ok).To(BeTrue())
+			Expect(value).To(Equal("val4"))
+			value, ok = table.Value("col2")
+			Expect(ok).To(BeTrue())
+			Expect(value).To(Equal("val5"))
+			value, ok = table.Value("col3")
+			Expect(ok).To(BeTrue())
+			Expect(value).To(Equal("val6"))
 		})
 
 		It("returns EOF when there are no more records", func() {

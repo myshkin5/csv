@@ -31,8 +31,12 @@ func New(columns []string, values [][]string) (*Table, error) {
 	}, nil
 }
 
-func (t *Table) Value(column string) string {
-	return t.values[t.current][t.columnIndex[column]]
+func (t *Table) Value(column string) (string, bool) {
+	columnIndex, ok := t.columnIndex[column]
+	if !ok {
+		return "", false
+	}
+	return t.values[t.current][columnIndex], true
 }
 
 func (t *Table) Next() error {
