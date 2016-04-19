@@ -1,8 +1,6 @@
 package csv_test
 
 import (
-	"bytes"
-	encoding_csv "encoding/csv"
 	"io"
 
 	. "github.com/onsi/ginkgo"
@@ -19,10 +17,8 @@ var _ = Describe("Table", func() {
 
 	Describe("happy path", func() {
 		BeforeEach(func() {
-			reader := encoding_csv.NewReader(bytes.NewBufferString("col1, col2, col3\nval1, val2, val3\nval4, val5, val  6"))
-			data, err := reader.ReadAll()
-			Expect(err).NotTo(HaveOccurred())
-			table, err = csv.New([]string{"col1", "col2"}, data)
+			table, err = csv.New([]string{"col1", "col2"},
+				[][]string{{"col1", "col2", "col3"}, {"val1", "val2", "val3"}, {"val4", "val5", "val6"}})
 			Expect(err).NotTo(HaveOccurred())
 		})
 
@@ -52,7 +48,7 @@ var _ = Describe("Table", func() {
 			Expect(value).To(Equal("val5"))
 			value, ok = table.Value("col3")
 			Expect(ok).To(BeTrue())
-			Expect(value).To(Equal("val  6"))
+			Expect(value).To(Equal("val6"))
 		})
 
 		It("returns EOF when there are no more records", func() {
