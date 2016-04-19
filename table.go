@@ -3,6 +3,7 @@ package csv
 import (
 	"errors"
 	"io"
+	"strings"
 )
 
 type Table struct {
@@ -15,7 +16,7 @@ type Table struct {
 func New(columns []string, values [][]string) (*Table, error) {
 	columnIndex := make(map[string]int)
 	for n, column := range values[0] {
-		columnIndex[column] = n
+		columnIndex[strings.TrimSpace(column)] = n
 	}
 	for _, column := range columns {
 		_, ok := columnIndex[column]
@@ -36,7 +37,7 @@ func (t *Table) Value(column string) (string, bool) {
 	if !ok {
 		return "", false
 	}
-	return t.values[t.current][columnIndex], true
+	return strings.TrimSpace(t.values[t.current][columnIndex]), true
 }
 
 func (t *Table) Next() error {
